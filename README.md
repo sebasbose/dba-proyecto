@@ -9,6 +9,8 @@ Sistema distribuido para scraping, almacenamiento y búsqueda de ofertas laboral
 - Esteban Chaves Obando C12149
 - Sebastián Meseguer Piedra C24819
 
+**Link del repo:** https://github.com/sebasbose/dba-proyecto/
+
 ## Arquitectura del Sistema
 
 ![Diagrama de arquitectura](./assets/diagram.png)
