@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Search</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5e6d3;
+        color: #3d2817;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #6b2c1a;
+        margin-bottom: 30px;
+        font-size: 2.5rem;
+      }
+
+      .search-box {
+        width: 100%;
+        padding: 15px 20px;
+        font-size: 16px;
+        border: 2px solid #9d5a3c;
+        border-radius: 8px;
+        background: white;
+        margin-bottom: 30px;
+        outline: none;
+        transition: border-color 0.3s;
+      }
+
+      .search-box:focus {
+        border-color: #6b2c1a;
+      }
+
+      .loading {
+        text-align: center;
+        color: #9d5a3c;
+        font-size: 18px;
+        margin: 20px 0;
+      }
+
+      .no-results {
+        text-align: center;
+        color: #9d5a3c;
+        font-size: 18px;
+        margin: 40px 0;
+      }
+
+      .job-card {
+        background: white;
+        border: 1px solid #d4b5a0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .job-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 44, 26, 0.15);
+      }
+
+      .job-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: #6b2c1a;
+        margin-bottom: 10px;
+      }
+
+      .job-meta {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        font-size: 14px;
+        color: #8d5a3c;
+      }
+
+      .job-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .job-description {
+        color: #5a4232;
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+
+      .skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .skill-tag {
+        background: #9d5a3c;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .results-count {
+        text-align: center;
+        color: #8d5a3c;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Job Search</h1>
+
+      <input
+        type="text"
+        class="search-box"
+        id="searchInput"
+        placeholder="Search for jobs... (e.g. python developer remote)"
+      />
+
+      <div class="results-count" id="resultsCount"></div>
+      <div class="loading" id="loading" style="display: none">Searching...</div>
+      <div class="no-results" id="noResults" style="display: none">
+        No jobs found
+      </div>
+
+      <div id="results"></div>
+    </div>
+
+	<script type="module" src="/main.js"></script>
+  </body>
+</html>
+  </body>
+</html>

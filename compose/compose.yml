@@ -1,0 +1,142 @@
+services:
+  frontend:
+    container_name: frontend
+    image: caddy:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./inits/Caddyfile:/etc/caddy/Caddyfile
+      - ../frontend/dist:/srv/frontend
+    depends_on:
+      - backend
+  backend:
+    image: node:20-alpine
+    container_name: backend
+    working_dir: /app
+    restart: on-failure
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    command: sh -c "npm install && node server.js"
+    ports:
+      - "${BACKEND_PORT}:3000"
+    depends_on:
+      - mysql
+      - mongodb
+      - postgresql
+  mongodb:
+    image: mongo:7.0
+    container_name: job-search-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+    ports:
+      - "${MONGO_PORT}:27017"
+    volumes:
+      - ./mongodb:/data/db
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    ports:
+      - "${MONGO_GUI_PORT}:8081"
+    depends_on:
+      - mongodb
+  mysql:
+    image: mysql:8.0
+    container_name: job-search-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./inits/init.mysql.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_ARBITRARY: 1
+    ports:
+      - "${MYSQL_GUI_PORT}:80"
+    depends_on:
+      - mysql
+  postgresql:
+    image: postgres:16
+    container_name: job-search-postgresql
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - ./postgresql:/var/lib/postgresql/data
+      - ./inits/init.postgres.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "${POSTGRES_GUI_PORT}:80"
+    depends_on:
+      - postgresql
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_GUI_PORT}:15672"
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  consumer:
+    image: node:20-alpine
+    container_name: consumer
+    working_dir: /app
+    restart: on-failure
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    command: sh -c "npm install && node consumer.js"
+    environment:
+      - MYSQL_HOST=mysql
+      - MONGO_HOST=mongodb
+      - POSTGRES_HOST=postgresql
+      - RABBITMQ_HOST=rabbitmq
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MONGO_ROOT_USER=${MONGO_ROOT_USER}
+      - MONGO_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+      - MONGO_PORT=27017
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - POSTGRES_PORT=5432
+      - RABBITMQ_USER=${RABBITMQ_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - mysql
+      - mongodb
+      - postgresql
+      - rabbitmq
