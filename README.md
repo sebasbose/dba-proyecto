@@ -4,10 +4,10 @@
 Sistema distribuido para scraping, almacenamiento y búsqueda de ofertas laborales utilizando múltiples bases de datos y arquitectura de microservicios.
 
 ## Equipo:
-- Sebastián Bolaños Serrano <C11142>
-- Oscar Quesada Webb <B96191>
-- Esteban Chaves Obando <C12149>
-- Sebastián Meseguer Piedra <C24819>
+- Sebastián Bolaños Serrano C11142
+- Oscar Quesada Webb B96191
+- Esteban Chaves Obando C12149
+- Sebastián Meseguer Piedra C24819
 
 ## Arquitectura del Sistema
 
